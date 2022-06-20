@@ -34,7 +34,7 @@ namespace vozy_automatizacion.Controllers
 
       string valores = "SP_VOZY_CARGA_GESTION";
 
-      using (SqlConnection connection = new SqlConnection("Server=192.168.8.8;Database=InteligenciaDB_Fase2;Trusted_Connection=True;"))
+      using (SqlConnection connection = new SqlConnection("Server=192.168.8.6;Database=InteligenciaDB_Fase2;User ID=ddonis;Password=0TkZDbcSPpn8"))
       {
         connection.Open();
         SqlCommand cmd = new(valores, connection);
