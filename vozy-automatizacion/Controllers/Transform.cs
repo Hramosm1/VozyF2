@@ -102,14 +102,14 @@ namespace vozy_automatizacion.Controllers
     private static JsonData PagoParcial(JsonData json)
     {
       json.resultado = "Localizado";
-      json.detalle = "En Confirmacion";
+      json.detalle = "En Negociacion";
       json.situacion = "Deudor";
       return json;
     }
     private static JsonData PagoTotal(JsonData json)
     {
       json.resultado = "Localizado";
-      json.detalle = "En Confirmacion";
+      json.detalle = "En Negociacion";
       json.situacion = "Deudor";
       return json;
     }
