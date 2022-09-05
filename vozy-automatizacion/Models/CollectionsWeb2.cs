@@ -26,7 +26,7 @@ public class CollectionsWeb2
     public string producto { get; set; }
     public string razon_de_no_pago { get; set; }
     public string session_id { get; set; }
-    public string? phone { get; set; }
+    public string phone { get; set; }
     public string? phone2 { get; set; }
     public string? phone3 { get; set; }
     public string Deuda { get; set; }

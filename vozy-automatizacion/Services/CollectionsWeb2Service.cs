@@ -6,8 +6,16 @@ public class CollectionsWeb2Service
 {
     public CollectionsWeb2 transformData(CollectionsWeb2 body)
     {
-        string transaction1 = $"{body.affirmations} {body.denials} (callorign) {body.repeat} {body.unavailable} {body.already_pay} {body.Informacion_de_contacto}";
-        string transaction2 = $"{body.Compromiso_de_pago} {body.denials} {body.fecha_de_compromiso} {body.Informacion_de_contacto}";
+        //SE MODIFICAN UNOS VALORES POR DEFAULT
+        body.phone = body.phone.Substring(3);
+        body.identificacion = body.identificacion.Replace("A","").Replace("B","");
+
+        string transaction1 =
+            $"{body.affirmations} {body.denials} {body.call_origin} {body.repeat} {body.unavailable} {body.already_pay} {body.Informacion_de_contacto}"
+                .Trim();
+        string transaction2 =
+            $"{body.Compromiso_de_pago} {body.denials} {body.fecha_de_compromiso} {body.Informacion_de_contacto}"
+                .Trim();
         body.situacion = "Deudor";
         //SI LA LLAMADA TIENE DURACION MAYOR A 0
         if (body.Duration > 0)
@@ -35,13 +43,14 @@ public class CollectionsWeb2Service
                             body.resultado = "Localizado";
                             body.detalle = "Negativa de pago";
                             break;
-                        
+
                         //contactact yes, pago limite
                         default:
                             body.resultado = "Localizado";
                             body.detalle = "En negociación";
                             break;
                     }
+
                     break;
 
                 //si no se pudo contactar con la persona
@@ -66,6 +75,7 @@ public class CollectionsWeb2Service
             body.resultado = "No contacto";
             body.detalle = "Fuera de servicio / Buzón de voz";
         }
+
         return body;
     }
 }

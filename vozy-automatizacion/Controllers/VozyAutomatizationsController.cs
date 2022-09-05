@@ -4,7 +4,6 @@ using System.Data.SqlClient;
 using Microsoft.AspNetCore.Mvc;
 using vozy_automatizacion.Models;
 using vozy_automatizacion.Services;
-using System.Text.Json;
 
 namespace vozy_automatizacion.Controllers;
 
@@ -12,7 +11,13 @@ namespace vozy_automatizacion.Controllers;
 [ApiController]
 public class VozyAutomatizationsController : ControllerBase
 {
-    private CollectionsWeb2Service web2Service = new CollectionsWeb2Service();
+    private CollectionsWeb2Service web2service = new CollectionsWeb2Service();
+    private readonly string constr;
+
+    public VozyAutomatizationsController(IConfiguration config)
+    {
+        this.constr = config.GetConnectionString("dev");
+    }
 
     // POST: api/VozyAutomatizations
     [HttpPost]
@@ -21,15 +26,10 @@ public class VozyAutomatizationsController : ControllerBase
         var resultado = Transform.AsignarDetalle(jsonObject);
         resultado = Transform.observacionesGestion(resultado);
         int primerNumeroTelefono = short.Parse(resultado.tel_llamada.Substring(3, 1));
-        //sp SP_VOZY_CARGA_GESTION @idempresa @idmoneda @noprestamo @situacion @resultado @detalle @fechagestion @horainicio @minutos @telefono @montopromesa @observacionesGestion
-
-        var valores = "SP_VOZY_CARGA_GESTION";
-        using (var connection =
-               new SqlConnection(
-                   "Server=192.168.8.6;Database=InteligenciaDB_Fase2;User ID=ddonis;Password=0TkZDbcSPpn8"))
+        using (var connection = new SqlConnection(this.constr))
         {
             connection.Open();
-            SqlCommand cmd = new(valores, connection);
+            SqlCommand cmd = new("SP_VOZY_CARGA_GESTION", connection);
             cmd.CommandType = CommandType.StoredProcedure;
             SqlParameter param;
             param = cmd.Parameters.Add("@IDEMPRESA", SqlDbType.Int);
@@ -75,14 +75,58 @@ public class VozyAutomatizationsController : ControllerBase
     //POST: api/VozyAutomatizations/web2
     [Route("web2")]
     [HttpPost]
-    public IActionResult PostWeb2(dynamic body)
+    public async Task<IActionResult> PostWeb2(CollectionsWeb2 body)
     {
-        string json = JsonSerializer.Serialize(body);
-        Console.WriteLine(json);
-        json.Replace("call origin", "call_origin");
-        Console.WriteLine(json);
-        //CollectionsWeb2 result = JsonSerializer.Deserialize<CollectionsWeb2>(json);
-        //return Ok(web2Service.transformData(body));
-        return Ok(json);
+        CollectionsWeb2 result = this.web2service.transformData(body);
+        using (SqlConnection con = new(this.constr))
+        {
+            try
+            {
+                await con.OpenAsync();
+                SqlCommand cmd = new SqlCommand("SP_VOZY_WEB2", con);
+
+                cmd.CommandType = CommandType.StoredProcedure;
+                SqlParameter param;
+                param = cmd.Parameters.Add("@IDEMPRESA", SqlDbType.Int);
+                param.Value = int.Parse(result.Codigo_del_banco);
+                param = cmd.Parameters.Add("@MONEDA", SqlDbType.VarChar, 50);
+                param.Value = result.Divisa;
+                param = cmd.Parameters.Add("@NOPRESTAMO", SqlDbType.VarChar, 50);
+                param.Value = result.identificacion;
+                param = cmd.Parameters.Add("@SITUACION", SqlDbType.VarChar, 150);
+                param.Value = result.situacion;
+                param = cmd.Parameters.Add("@RESULTADO", SqlDbType.VarChar, 150);
+                param.Value = result.resultado;
+                param = cmd.Parameters.Add("@DETALLE", SqlDbType.VarChar, 150);
+                param.Value = result.detalle;
+                param = cmd.Parameters.Add("@FECHAGESTION", SqlDbType.VarChar, 25);
+                param.Value = result.Date;
+                param = cmd.Parameters.Add("@HORAINICIO", SqlDbType.VarChar, 25);
+                param.Value = result.hour;
+                param = cmd.Parameters.Add("@SEGUNDOS", SqlDbType.VarChar, 10);
+                param.Value = result.Duration;
+                param = cmd.Parameters.Add("@TELEFONO", SqlDbType.VarChar, 25);
+                param.Value = result.phone;
+                param = cmd.Parameters.Add("@MONTOPROMESA", SqlDbType.Money);
+                try
+                {
+                    param.Value = double.Parse(result.partial_payment);
+                }
+                catch (Exception e)
+                {
+                    param.Value = 0;
+                }
+
+                param = cmd.Parameters.Add("@OBSERVACIONESGESTION", SqlDbType.NText);
+                param.Value = result.gestion;
+                var SpResult = await cmd.ExecuteNonQueryAsync();
+                return Ok(SpResult);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return BadRequest(e.Message);
+            }
+        }
     }
 }
