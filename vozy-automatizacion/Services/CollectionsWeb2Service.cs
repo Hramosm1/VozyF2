@@ -6,9 +6,12 @@ public class CollectionsWeb2Service
 {
     public CollectionsWeb2 transformData(CollectionsWeb2 body)
     {
-        //SE MODIFICAN UNOS VALORES POR DEFAULT
+        //SE ELIMINAN LOS PRIMEROS 3 VALORES DEL NUMERO PARA QUITAR EL 502
         body.phone = body.phone.Substring(3);
-        body.identificacion = body.identificacion.Replace("A","").Replace("B","");
+        //SE ELIMINA EL VALOR A Y B DE LA IDENTIFICACION EN EL FORMATO {A}XXXXX{B}
+        body.identificacion = body.identificacion
+            .Replace("A","")
+            .Replace("B","");
 
         string transaction1 =
             $"{body.affirmations} {body.denials} {body.call_origin} {body.repeat} {body.unavailable} {body.already_pay} {body.Informacion_de_contacto}"
@@ -16,18 +19,18 @@ public class CollectionsWeb2Service
         string transaction2 =
             $"{body.Compromiso_de_pago} {body.denials} {body.fecha_de_compromiso} {body.Informacion_de_contacto}"
                 .Trim();
-        body.situacion = "Deudor";
+        body.situacion = "DEUDOR";
         //SI LA LLAMADA TIENE DURACION MAYOR A 0
         if (body.Duration > 0)
         {
-            switch (body.contactability_type)
+            switch (body.contactability_type.ToLower())
             {
                 //si se logro contactar con la persona
-                case "Contacto si":
+                case "contacto sí":
                     body.gestion = transaction2;
-                    switch (body.success_type)
+                    switch (body.success_type.ToLower())
                     {
-                        case "confirma pago":
+                        case "confirma Pago":
                             body.resultado = "Promesa de pago";
                             body.detalle = "Convenio de pago";
                             break;
@@ -54,7 +57,7 @@ public class CollectionsWeb2Service
                     break;
 
                 //si no se pudo contactar con la persona
-                case "Contacto no":
+                case "contacto no":
                     body.resultado = "No contacto";
                     body.detalle = "Contestan y cuelga";
                     body.gestion = transaction1;
@@ -72,8 +75,8 @@ public class CollectionsWeb2Service
         //SI LA LLAMADA NO SE REALIZO 
         else
         {
-            body.resultado = "No contacto";
-            body.detalle = "Fuera de servicio / Buzón de voz";
+            body.resultado = "NO CONTACTO";
+            body.detalle = "FUERA DE SERVICIO / BUZON DE VOZ";
         }
 
         return body;

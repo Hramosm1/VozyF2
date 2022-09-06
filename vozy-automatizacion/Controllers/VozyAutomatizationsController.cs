@@ -13,11 +13,13 @@ public class VozyAutomatizationsController : ControllerBase
 {
     private CollectionsWeb2Service web2service = new CollectionsWeb2Service();
     private readonly string constr;
+    private readonly string prod;
 
     public VozyAutomatizationsController(IConfiguration config)
     {
         this.constr = config.GetConnectionString("dev");
-    }
+        this.prod = config.GetConnectionString("prod");
+    }   
 
     // POST: api/VozyAutomatizations
     [HttpPost]
@@ -26,7 +28,7 @@ public class VozyAutomatizationsController : ControllerBase
         var resultado = Transform.AsignarDetalle(jsonObject);
         resultado = Transform.observacionesGestion(resultado);
         int primerNumeroTelefono = short.Parse(resultado.tel_llamada.Substring(3, 1));
-        using (var connection = new SqlConnection(this.constr))
+        using (var connection = new SqlConnection(this.prod))
         {
             connection.Open();
             SqlCommand cmd = new("SP_VOZY_CARGA_GESTION", connection);
@@ -118,9 +120,9 @@ public class VozyAutomatizationsController : ControllerBase
                 }
 
                 param = cmd.Parameters.Add("@OBSERVACIONESGESTION", SqlDbType.NText);
-                param.Value = result.gestion;
-                var SpResult = await cmd.ExecuteNonQueryAsync();
-                return Ok(SpResult);
+                param.Value = $"{result.gestion} {result.campaign_id}";
+                var sp = await cmd.ExecuteNonQueryAsync();
+                return Ok(sp);
             }
             catch (Exception e)
             {
