@@ -40,7 +40,7 @@ public class CollectionsWeb2Service
                             break;
                         case "ya pagó":
                             body.resultado = "Confirmar pago";
-                            body.detalle = "Realizó pago";
+                            body.detalle = "Realizo pago";
                             break;
                         case "razón de no pago":
                             body.resultado = "Localizado";
@@ -50,7 +50,7 @@ public class CollectionsWeb2Service
                         //contactact yes, pago limite
                         default:
                             body.resultado = "Localizado";
-                            body.detalle = "En negociación";
+                            body.detalle = "En negociacion";
                             break;
                     }
 
@@ -59,7 +59,7 @@ public class CollectionsWeb2Service
                 //si no se pudo contactar con la persona
                 case "contacto no":
                     body.resultado = "No contacto";
-                    body.detalle = "Contestan y cuelga";
+                    body.detalle = "Contestan y cuelgan";
                     body.gestion = transaction1;
                     break;
 

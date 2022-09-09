@@ -12,13 +12,12 @@ namespace vozy_automatizacion.Controllers;
 public class VozyAutomatizationsController : ControllerBase
 {
     private CollectionsWeb2Service web2service = new CollectionsWeb2Service();
-    private readonly string constr;
     private readonly string prod;
 
     public VozyAutomatizationsController(IConfiguration config)
     {
-        this.constr = config.GetConnectionString("dev");
-        this.prod = config.GetConnectionString("prod");
+        //this.prod = config.GetConnectionString("dev");
+        this.prod = "Server=192.168.8.6;Database=InteligenciaDB_Fase2;User ID=vozy;Password=C3vX7N5#UeXh";
     }   
 
     // POST: api/VozyAutomatizations
@@ -80,13 +79,12 @@ public class VozyAutomatizationsController : ControllerBase
     public async Task<IActionResult> PostWeb2(CollectionsWeb2 body)
     {
         CollectionsWeb2 result = this.web2service.transformData(body);
-        using (SqlConnection con = new(this.constr))
+        using (SqlConnection con = new(this.prod))
         {
             try
             {
                 await con.OpenAsync();
                 SqlCommand cmd = new SqlCommand("SP_VOZY_WEB2", con);
-
                 cmd.CommandType = CommandType.StoredProcedure;
                 SqlParameter param;
                 param = cmd.Parameters.Add("@IDEMPRESA", SqlDbType.Int);
@@ -122,7 +120,7 @@ public class VozyAutomatizationsController : ControllerBase
                 param = cmd.Parameters.Add("@OBSERVACIONESGESTION", SqlDbType.NText);
                 param.Value = $"{result.gestion} {result.campaign_id}";
                 var sp = await cmd.ExecuteNonQueryAsync();
-                return Ok(sp);
+                return Ok(result);
             }
             catch (Exception e)
             {
