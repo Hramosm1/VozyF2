@@ -30,14 +30,6 @@ public class CollectionsWeb2Service
                     body.gestion = transaction2;
                     switch (body.success_type.ToLower())
                     {
-                        case "confirma Pago":
-                            body.resultado = "Promesa de pago";
-                            body.detalle = "Convenio de pago";
-                            break;
-                        case "pago parcial":
-                            body.resultado = "Promesa de pago";
-                            body.detalle = "Pago parcial";
-                            break;
                         case "ya pagó":
                             body.resultado = "Confirmar pago";
                             body.detalle = "Realizo pago";
@@ -47,13 +39,12 @@ public class CollectionsWeb2Service
                             body.detalle = "Negativa de pago";
                             break;
 
-                        //contactact yes, pago limite
+                        //contactact yes, pago limite, confirma pago, pago parcial
                         default:
                             body.resultado = "Localizado";
                             body.detalle = "En negociacion";
                             break;
                     }
-
                     break;
 
                 //si no se pudo contactar con la persona
