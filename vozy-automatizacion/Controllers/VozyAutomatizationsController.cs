@@ -107,7 +107,7 @@ public class VozyAutomatizationsController : ControllerBase
                 param.Value = result.Duration;
                 param = cmd.Parameters.Add("@TELEFONO", SqlDbType.VarChar, 25);
                 param.Value = result.phone;
-                param = cmd.Parameters.Add("@MONTOPROMESA", SqlDbType.Money);
+                param = cmd.Parameters.Add("@MONTOPROMESA", SqlDbType.Money);         
                 try
                 {
                     param.Value = double.Parse(result.partial_payment);
@@ -118,7 +118,9 @@ public class VozyAutomatizationsController : ControllerBase
                 }
 
                 param = cmd.Parameters.Add("@OBSERVACIONESGESTION", SqlDbType.NText);
-                param.Value = $"{result.gestion} {result.campaign_id}";
+                param.Value = result.gestion;
+                param.Value = result.campaign_id;
+                param = cmd.Parameters.Add("@CAMPAINID", SqlDbType.VarChar, 50);
                 var sp = await cmd.ExecuteNonQueryAsync();
                 return Ok(result);
             }
