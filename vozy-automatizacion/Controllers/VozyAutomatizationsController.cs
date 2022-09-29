@@ -6,18 +6,18 @@ using vozy_automatizacion.Models;
 using vozy_automatizacion.Services;
 
 namespace vozy_automatizacion.Controllers;
-
+//{base}/api/vozyAutomatizations
 [Route("api/[controller]")]
 [ApiController]
 public class VozyAutomatizationsController : ControllerBase
 {
     private CollectionsWeb2Service web2service = new CollectionsWeb2Service();
-    private readonly string prod;
+    private readonly string cadenaDeConexionBaseDeDatos;
 
     public VozyAutomatizationsController(IConfiguration config)
     {
         //this.prod = config.GetConnectionString("dev");
-        this.prod = "Server=192.168.8.6;Database=InteligenciaDB_Fase2;User ID=vozy;Password=C3vX7N5#UeXh";
+        this.cadenaDeConexionBaseDeDatos = "Server=192.168.8.8;Database=InteligenciaDB_Fase2;Trusted_Connection=True;";
     }   
 
     // POST: api/VozyAutomatizations
@@ -27,7 +27,7 @@ public class VozyAutomatizationsController : ControllerBase
         var resultado = Transform.AsignarDetalle(jsonObject);
         resultado = Transform.observacionesGestion(resultado);
         int primerNumeroTelefono = short.Parse(resultado.tel_llamada.Substring(3, 1));
-        using (var connection = new SqlConnection(this.prod))
+        using (var connection = new SqlConnection(this.cadenaDeConexionBaseDeDatos))
         {
             connection.Open();
             SqlCommand cmd = new("SP_VOZY_CARGA_GESTION", connection);
@@ -79,13 +79,14 @@ public class VozyAutomatizationsController : ControllerBase
     public async Task<IActionResult> PostWeb2(CollectionsWeb2 body)
     {
         CollectionsWeb2 result = this.web2service.transformData(body);
-        using (SqlConnection con = new(this.prod))
+        using (SqlConnection con = new (this.cadenaDeConexionBaseDeDatos))
         {
             try
             {
                 await con.OpenAsync();
                 SqlCommand cmd = new SqlCommand("SP_VOZY_WEB2", con);
                 cmd.CommandType = CommandType.StoredProcedure;
+                //SE AGREGAN LOS PARAMETROS DEL SP
                 SqlParameter param;
                 param = cmd.Parameters.Add("@IDEMPRESA", SqlDbType.Int);
                 param.Value = int.Parse(result.Codigo_del_banco);
@@ -107,7 +108,8 @@ public class VozyAutomatizationsController : ControllerBase
                 param.Value = result.Duration;
                 param = cmd.Parameters.Add("@TELEFONO", SqlDbType.VarChar, 25);
                 param.Value = result.phone;
-                param = cmd.Parameters.Add("@MONTOPROMESA", SqlDbType.Money);         
+                param = cmd.Parameters.Add("@MONTOPROMESA", SqlDbType.Money);  
+                //SI VALUE VIENE VACIO "" LO CONVIERTO EN VALOR 0
                 try
                 {
                     param.Value = double.Parse(result.partial_payment);
@@ -119,9 +121,11 @@ public class VozyAutomatizationsController : ControllerBase
 
                 param = cmd.Parameters.Add("@OBSERVACIONESGESTION", SqlDbType.NText);
                 param.Value = result.gestion;
-                param.Value = result.campaign_id;
                 param = cmd.Parameters.Add("@CAMPAINID", SqlDbType.VarChar, 50);
+                param.Value = result.campaign_id;
+                //EJECUTO EL SP
                 var sp = await cmd.ExecuteNonQueryAsync();
+                //SI TODO SALE BIEN REGRESO EL BODY TRANSFORMADO
                 return Ok(result);
             }
             catch (Exception e)
@@ -131,4 +135,6 @@ public class VozyAutomatizationsController : ControllerBase
             }
         }
     }
+    
+    
 }

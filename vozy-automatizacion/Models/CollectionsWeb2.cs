@@ -4,7 +4,7 @@ public class CollectionsWeb2
 {
     public string Compromiso_de_pago { get; set; }
     public string? agent_name { get; set; }
-    public Guid campaign_id { get; set; }
+    public string campaign_id { get; set; }
     public string Codigo_del_banco { get; set; }
     public string? Usuario_conocido { get; set; }
     public Guid? contact_id { get; set; }
