@@ -12,7 +12,7 @@
     <WebStackScaffolding_DbContextTypeFullName>vozy_automatizacion.Data.vozy_automatizacionContext</WebStackScaffolding_DbContextTypeFullName>
     <WebStackScaffolding_IsAsyncSelected>False</WebStackScaffolding_IsAsyncSelected>
     <ActiveDebugProfile>vozy_automatizacion</ActiveDebugProfile>
-    <NameOfLastUsedPublishProfile>C:\Users\dsoto\source\repos\vozy-automatizacion\vozy-automatizacion\Properties\PublishProfiles\FolderProfile.pubxml</NameOfLastUsedPublishProfile>
+    <NameOfLastUsedPublishProfile>D:\Documentos\Repositorios\VozyFase2\vozy-automatizacion\Properties\PublishProfiles\FolderProfile.pubxml</NameOfLastUsedPublishProfile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebuggerFlavor>ProjectDebugger</DebuggerFlavor>

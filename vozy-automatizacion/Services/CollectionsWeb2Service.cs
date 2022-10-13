@@ -9,17 +9,16 @@ public class CollectionsWeb2Service
         //SE ELIMINAN LOS PRIMEROS 3 VALORES DEL NUMERO PARA QUITAR EL 502
         body.phone = body.phone.Substring(3);
         //SE ELIMINA EL VALOR A Y B DE LA IDENTIFICACION EN EL FORMATO {A}XXXXX{B}
-        body.identificacion = body.identificacion
-            .Replace("A","")
-            .Replace("B","");
+        body.identificacion = body.identificacion.Remove(body.identificacion.Length - 1).Remove(0, 1);
 
-        string transaction1 =
-            $"{body.affirmations} {body.denials} {body.call_origin} {body.repeat} {body.unavailable} {body.already_pay} {body.Informacion_de_contacto}"
+        string observacionTipo1 =
+            $" Telefono: {body.phone} {body.affirmations} {body.denials} {body.call_origin} {body.repeat} {body.unavailable} {body.already_pay} {body.Informacion_de_contacto}"
                 .Trim();
-        string transaction2 =
+        string observacionTipo2 =
             $"{body.Compromiso_de_pago} {body.denials} {body.fecha_de_compromiso} {body.Informacion_de_contacto}"
                 .Trim();
         body.situacion = "DEUDOR";
+        body.gestion = "";
         //SI LA LLAMADA TIENE DURACION MAYOR A 0
         if (body.Duration > 0)
         {
@@ -27,17 +26,9 @@ public class CollectionsWeb2Service
             {
                 //si se logro contactar con la persona
                 case "contacto sí":
-                    body.gestion = transaction2;
+                    body.gestion = observacionTipo2;
                     switch (body.success_type.ToLower())
                     {
-                        case "confirma Pago":
-                            body.resultado = "Promesa de pago";
-                            body.detalle = "Convenio de pago";
-                            break;
-                        case "pago parcial":
-                            body.resultado = "Promesa de pago";
-                            body.detalle = "Pago parcial";
-                            break;
                         case "ya pagó":
                             body.resultado = "Confirmar pago";
                             body.detalle = "Realizo pago";
@@ -47,20 +38,19 @@ public class CollectionsWeb2Service
                             body.detalle = "Negativa de pago";
                             break;
 
-                        //contactact yes, pago limite
+                        //contactact yes, pago limite, confirma pago, pago parcial
                         default:
                             body.resultado = "Localizado";
                             body.detalle = "En negociacion";
                             break;
                     }
-
                     break;
 
                 //si no se pudo contactar con la persona
                 case "contacto no":
                     body.resultado = "No contacto";
                     body.detalle = "Contestan y cuelgan";
-                    body.gestion = transaction1;
+                    body.gestion = observacionTipo1;
                     break;
 
                 //todos los demas casos
@@ -68,7 +58,7 @@ public class CollectionsWeb2Service
                     body.resultado = "Localizado";
                     body.detalle = "Devolucion de llamada";
                     body.situacion = "Tercero";
-                    body.gestion = transaction1;
+                    body.gestion = observacionTipo1;
                     break;
             }
         }
