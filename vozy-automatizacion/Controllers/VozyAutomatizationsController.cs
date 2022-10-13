@@ -12,13 +12,23 @@ namespace vozy_automatizacion.Controllers;
 public class VozyAutomatizationsController : ControllerBase
 {
     private CollectionsWeb2Service web2service = new CollectionsWeb2Service();
+
     private readonly string cadenaDeConexionBaseDeDatos;
 
     public VozyAutomatizationsController(IConfiguration config)
     {
-        //this.prod = config.GetConnectionString("dev");
-        this.cadenaDeConexionBaseDeDatos = "Server=192.168.8.8;Database=InteligenciaDB_Fase2;Trusted_Connection=True;";
-    }   
+        //this.cadenaDeConexionBaseDeDatos = config.GetConnectionString("prod");
+        
+        this.cadenaDeConexionBaseDeDatos = "Server=192.168.8.6;Database=InteligenciaDB_Fase2;User ID=vozy;Password=C3vX7N5#UeXh";
+        //this.cadenaDeConexionBaseDeDatos = "Server=192.168.8.8;Database=InteligenciaDB_Fase2;User ID=vozy;Password=0X6O#0d369@j";
+
+
+    }
+    [HttpGet]
+    public async Task<IActionResult> getPrueba()
+    {
+        return Ok("Funciona");
+    }
 
     // POST: api/VozyAutomatizations
     [HttpPost]

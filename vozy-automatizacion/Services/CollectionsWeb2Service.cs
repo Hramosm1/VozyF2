@@ -12,7 +12,7 @@ public class CollectionsWeb2Service
         body.identificacion = body.identificacion.Remove(body.identificacion.Length - 1).Remove(0, 1);
 
         string observacionTipo1 =
-            $"{body.affirmations} {body.denials} {body.call_origin} {body.repeat} {body.unavailable} {body.already_pay} {body.Informacion_de_contacto}"
+            $" Telefono: {body.phone} {body.affirmations} {body.denials} {body.call_origin} {body.repeat} {body.unavailable} {body.already_pay} {body.Informacion_de_contacto}"
                 .Trim();
         string observacionTipo2 =
             $"{body.Compromiso_de_pago} {body.denials} {body.fecha_de_compromiso} {body.Informacion_de_contacto}"
