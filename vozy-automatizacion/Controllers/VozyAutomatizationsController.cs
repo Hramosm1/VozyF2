@@ -18,9 +18,9 @@ public class VozyAutomatizationsController : ControllerBase
     public VozyAutomatizationsController(IConfiguration config)
     {
         //this.cadenaDeConexionBaseDeDatos = config.GetConnectionString("prod");
-        
-        this.cadenaDeConexionBaseDeDatos = "Server=192.168.8.6;Database=InteligenciaDB_Fase2;User ID=vozy;Password=C3vX7N5#UeXh";
-        //this.cadenaDeConexionBaseDeDatos = "Server=192.168.8.8;Database=InteligenciaDB_Fase2;User ID=vozy;Password=0X6O#0d369@j";
+
+        //this.cadenaDeConexionBaseDeDatos = "Server=192.168.8.6;Database=InteligenciaDB_Fase2;User ID=vozy;Password=C3vX7N5#UeXh";
+        this.cadenaDeConexionBaseDeDatos = "Server=192.168.8.8;Database=InteligenciaDB_Fase2;User ID=vozy;Password=0X6O#0d369@j";
 
 
     }
