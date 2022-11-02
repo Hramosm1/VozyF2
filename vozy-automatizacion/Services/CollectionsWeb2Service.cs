@@ -12,7 +12,7 @@ public class CollectionsWeb2Service
         body.identificacion = body.identificacion.Remove(body.identificacion.Length - 1).Remove(0, 1);
 
         string observacionTipo1 =
-            $" Telefono: {body.phone} {body.affirmations} {body.denials} {body.call_origin} {body.repeat} {body.unavailable} {body.already_pay} {body.Informacion_de_contacto}"
+            $"{body.affirmations} {body.denials} {body.call_origin} {body.repeat} {body.unavailable} {body.already_pay} {body.Informacion_de_contacto}"
                 .Trim();
         string observacionTipo2 =
             $"{body.Compromiso_de_pago} {body.denials} {body.fecha_de_compromiso} {body.Informacion_de_contacto}"
@@ -26,22 +26,45 @@ public class CollectionsWeb2Service
             {
                 //si se logro contactar con la persona
                 case "contacto sí":
-                    body.gestion = observacionTipo2;
+                    //body.gestion = observacionTipo2;
                     switch (body.success_type.ToLower())
                     {
                         case "ya pagó":
                             body.resultado = "Confirmar pago";
                             body.detalle = "Realizo pago";
+                            if (observacionTipo2.Length == 0)
+                            {
+                                body.gestion = body.gestion = "Telefono: " + body.phone + " " + body.detalle;
+                            } else
+                            {
+                                body.gestion = body.gestion = "Telefono: " + body.phone + " " + observacionTipo2;
+                            }
                             break;
                         case "razón de no pago":
                             body.resultado = "Localizado";
                             body.detalle = "Negativa de pago";
+                            if (observacionTipo2.Length == 0)
+                            {
+                                body.gestion = body.gestion = "Telefono: " + body.phone + " " + body.detalle;
+                            }
+                            else
+                            {
+                                body.gestion = body.gestion = "Telefono: " + body.phone + " " + observacionTipo2;
+                            }
                             break;
 
                         //contactact yes, pago limite, confirma pago, pago parcial
                         default:
                             body.resultado = "Localizado";
                             body.detalle = "En negociacion";
+                            if (observacionTipo2.Length == 0)
+                            {
+                                body.gestion = body.gestion = "Telefono: " + body.phone + " " + body.detalle;
+                            }
+                            else
+                            {
+                                body.gestion = body.gestion = "Telefono: " + body.phone + " " + observacionTipo2;
+                            }
                             break;
                     }
                     break;
@@ -50,7 +73,14 @@ public class CollectionsWeb2Service
                 case "contacto no":
                     body.resultado = "No contacto";
                     body.detalle = "Contestan y cuelgan";
-                    body.gestion = observacionTipo1;
+                    if (observacionTipo1.Length == 0)
+                    {
+                        body.gestion = "Telefono: " + body.phone + " Contestan y cuelgan";
+                    } else
+                    {
+                        body.gestion = body.gestion = "Telefono: " + body.phone + " " + observacionTipo1;
+                    }
+                    
                     break;
 
                 //todos los demas casos
@@ -58,7 +88,14 @@ public class CollectionsWeb2Service
                     body.resultado = "Localizado";
                     body.detalle = "Devolucion de llamada";
                     body.situacion = "Tercero";
-                    body.gestion = observacionTipo1;
+                    if (observacionTipo1.Length == 0)
+                    {
+                        body.gestion = "Telefono: " + body.phone + " Devolucion de llamada";
+                    }
+                    else
+                    {
+                        body.gestion = body.gestion = "Telefono: " + body.phone + " " + observacionTipo1;
+                    }
                     break;
             }
         }
