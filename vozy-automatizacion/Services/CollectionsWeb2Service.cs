@@ -21,83 +21,87 @@ public class CollectionsWeb2Service
         body.gestion = "";
         //SI LA LLAMADA TIENE DURACION MAYOR A 0
         if (body.Duration > 0)
-        {
-            switch (body.contactability_type.ToLower())
+        {   
+            switch (body.Answered)
             {
-                //si se logro contactar con la persona
-                case "contacto sí":
-                    //body.gestion = observacionTipo2;
-                    switch (body.success_type.ToLower())
+                case true:
+                    switch (body.contact_confirmed)
                     {
-                        case "ya pagó":
-                            body.resultado = "Confirmar pago";
-                            body.detalle = "Realizo pago";
-                            if (observacionTipo2.Length == 0)
+                        case true:
+                            switch (body.success_type.ToLower())
                             {
-                                body.gestion = body.gestion = "Telefono: " + body.phone + " " + body.detalle;
-                            } else
-                            {
-                                body.gestion = body.gestion = "Telefono: " + body.phone + " " + observacionTipo2;
-                            }
-                            break;
-                        case "razón de no pago":
-                            body.resultado = "Localizado";
-                            body.detalle = "Negativa de pago";
-                            if (observacionTipo2.Length == 0)
-                            {
-                                body.gestion = body.gestion = "Telefono: " + body.phone + " " + body.detalle;
-                            }
-                            else
-                            {
-                                body.gestion = body.gestion = "Telefono: " + body.phone + " " + observacionTipo2;
-                            }
-                            break;
+                                case "ya pagó":
+                                    body.resultado = "Confirmar pago";
+                                    body.detalle = "Realizo pago";
+                                    if (observacionTipo2.Length == 0)
+                                    {
+                                        body.gestion = body.gestion = "Telefono: " + body.phone + " " + body.detalle;
+                                    }
+                                    else
+                                    {
+                                        body.gestion = body.gestion = "Telefono: " + body.phone + " " + observacionTipo2;
+                                    }
+                                    break;
+                                case "razón de no pago":
+                                    body.resultado = "Localizado";
+                                    body.detalle = "Negativa de pago";
+                                    if (observacionTipo2.Length == 0)
+                                    {
+                                        body.gestion = body.gestion = "Telefono: " + body.phone + " " + body.detalle;
+                                    }
+                                    else
+                                    {
+                                        body.gestion = body.gestion = "Telefono: " + body.phone + " " + observacionTipo2;
+                                    }
+                                    break;
 
-                        //contactact yes, pago limite, confirma pago, pago parcial
-                        default:
+                                //contactact yes, pago limite, confirma pago, pago parcial
+                                default:
+                                    body.resultado = "Localizado";
+                                    body.detalle = "En negociacion";
+                                    if (observacionTipo2.Length == 0)
+                                    {
+                                        body.gestion = body.gestion = "Telefono: " + body.phone + " " + body.detalle;
+                                    }
+                                    else
+                                    {
+                                        body.gestion = body.gestion = "Telefono: " + body.phone + " " + observacionTipo2;
+                                    }
+                                    break;
+                            }
+                            break;
+                        case false:
                             body.resultado = "Localizado";
-                            body.detalle = "En negociacion";
-                            if (observacionTipo2.Length == 0)
+                            body.detalle = "Devolucion de llamada";
+                            body.situacion = "Tercero";
+                            if (observacionTipo1.Length == 0)
                             {
-                                body.gestion = body.gestion = "Telefono: " + body.phone + " " + body.detalle;
+                                body.gestion = "Telefono: " + body.phone + " Devolucion de llamada";
                             }
                             else
                             {
-                                body.gestion = body.gestion = "Telefono: " + body.phone + " " + observacionTipo2;
+                                body.gestion = body.gestion = "Telefono: " + body.phone + " " + observacionTipo1;
                             }
-                            break;
+                            break;  
                     }
-                    break;
+                break;
 
-                //si no se pudo contactar con la persona
-                case "contacto no":
+               case false:
                     body.resultado = "No contacto";
                     body.detalle = "Contestan y cuelgan";
                     if (observacionTipo1.Length == 0)
                     {
                         body.gestion = "Telefono: " + body.phone + " Contestan y cuelgan";
-                    } else
-                    {
-                        body.gestion = body.gestion = "Telefono: " + body.phone + " " + observacionTipo1;
-                    }
-                    
-                    break;
-
-                //todos los demas casos
-                default:
-                    body.resultado = "Localizado";
-                    body.detalle = "Devolucion de llamada";
-                    body.situacion = "Tercero";
-                    if (observacionTipo1.Length == 0)
-                    {
-                        body.gestion = "Telefono: " + body.phone + " Devolucion de llamada";
                     }
                     else
                     {
                         body.gestion = body.gestion = "Telefono: " + body.phone + " " + observacionTipo1;
                     }
+
                     break;
             }
+
+            
         }
         //SI LA LLAMADA NO SE REALIZO 
         else
